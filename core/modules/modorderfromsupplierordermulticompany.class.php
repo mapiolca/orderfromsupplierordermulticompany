@@ -457,11 +457,10 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
 
 
 		// ajoute un extrafield de laison entre la ligne de commande fournisseur et la ligne de commande créé
-		$param = array ();
 		$label =  'supplierOrderDetSource';
 		$help =  'supplierOrderDetSourceHelp';
 		$key = 'supplier_order_det_source';
-		$e->addExtraField($key, $label, 'int', 1, 10, 'commandedet', 0, 0, '', $param, 0, '', 0, $help, '', 0, 'ofsom@orderfromsupplierordermulticompany');
+		$e->addExtraField($key, $label, 'int', 1, 10, 'commandedet', 0, 0, '', '', 0, '', 0, $help, '', 0, 'ofsom@orderfromsupplierordermulticompany');
 
 
 
