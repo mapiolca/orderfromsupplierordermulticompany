@@ -156,6 +156,146 @@ class TTELink extends TObjetStd
 
 
 	/**
+	 * Crée une facture fournisseur dans l'entité cible à partir d'une facture client
+	 * @param int $idInvoiceSource ID de la facture client source
+	 * @param int $toEntity ID de l'entité cible
+	 * @return int >0 if OK, <0 if KO
+	 */
+	public function cloneInvoice($idInvoiceSource, $toEntity)
+	{
+		global $db, $conf, $user, $langs;
+
+		dol_include_once('/compta/facture/class/facture.class.php');
+		dol_include_once('/fourn/class/fournisseur.facture.class.php');
+
+		$facture = new Facture($db);
+		$facture->fetch($idInvoiceSource);
+		$facture->fetch_lines();
+
+		// Récupération du tiers correspondant à l'entité source dans l'entité cible (le fournisseur côté entité cible)
+		$fk_soc = $this->getSocIdFromEntity($conf->entity, $toEntity);
+		if ($fk_soc <= 0) {
+			return -1;
+		}
+
+		// Vérifier si une facture fournisseur existe déjà pour cette facture client
+		$existingInvoiceId = $this->getSupplierInvoiceIdFromInvoice($facture, $toEntity);
+		if ($existingInvoiceId > 0) {
+			// La facture existe déjà dans le système en face. On la supprime pour la recréer
+			$fi = new FactureFournisseur($db);
+
+			$previous_entity = $conf->entity;
+			$conf->entity = $toEntity;
+			if ($fi->fetch($existingInvoiceId) > 0) {
+				$delRes = $fi->delete($user);
+				if ($delRes < 0) {
+					$this->error = $fi->error;
+					$conf->entity = $previous_entity;
+					return -3;
+				}
+			} else {
+				$conf->entity = $previous_entity;
+				return -2;
+			}
+			$conf->entity = $previous_entity;
+		}
+
+		$fi = new FactureFournisseur($db);
+		$fi->date = $facture->date;
+		$fi->ref_supplier = $facture->ref;
+		$fi->socid = $fk_soc;
+		$fi->fk_project = $facture->fk_project;
+		$fi->note_public = $facture->note_public;
+		$fi->note_private = $facture->note_private;
+		$fi->cond_reglement_id = $facture->cond_reglement_id;
+		$fi->mode_reglement_id = $facture->mode_reglement_id;
+		$fi->lines = array();
+
+		foreach ($facture->lines as $line) {
+			$lineInvoice = new SupplierInvoiceLine($db);
+
+			$TPropertiesToClone = array('desc', 'qty', 'tva_tx', 'vat_src_code', 'localtax1_tx', 'localtax2_tx', 'fk_product', 'remise_percent', 'info_bits', 'date_start', 'date_end', 'product_type', 'rang', 'special_code', 'fk_parent_line', 'label', 'array_options', 'fk_unit');
+
+			foreach ($TPropertiesToClone as $property) {
+				if (isset($line->{$property})) {
+					$lineInvoice->{$property} = $line->{$property};
+				}
+			}
+
+			// Le prix unitaire de la facture client devient le prix unitaire de la facture fournisseur
+			$lineInvoice->pu_ht = $line->subprice;
+			$lineInvoice->subprice = $line->subprice;
+
+			$fi->lines[] = $lineInvoice;
+		}
+
+		$invoiceCreatedRes = $fi->create($user);
+
+		if ($invoiceCreatedRes < 0) {
+			$this->error = $fi->error;
+			return -4;
+		}
+
+		// Transfert de la facture fournisseur dans l'entité cible
+		$res = $db->query("UPDATE " . MAIN_DB_PREFIX . "facture_fourn SET entity=" . intval($toEntity) . " WHERE rowid=" . intval($fi->id));
+		if (!$res) {
+			return -5;
+		}
+
+		// Lien entre la facture client et la facture fournisseur dans la table element_element
+		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "element_element (";
+		$sql .= "fk_source";
+		$sql .= ", sourcetype";
+		$sql .= ", fk_target";
+		$sql .= ", targettype";
+		$sql .= ") VALUES (";
+		$sql .= intval($idInvoiceSource);
+		$sql .= ", 'facture'";
+		$sql .= ", " . intval($fi->id);
+		$sql .= ", 'invoice_supplier'";
+		$sql .= ")";
+		$res = $db->query($sql);
+		if (!$res) {
+			return -6;
+		}
+
+		return $invoiceCreatedRes;
+	}
+
+	/**
+	 * Permet de récupérer l'ID de la facture fournisseur côté entité cible à partir de la facture client
+	 * @param Facture $invoice facture client source
+	 * @param int $targetEntity entité cible
+	 * @return int <=0 if KO, >0 if OK
+	 */
+	public function getSupplierInvoiceIdFromInvoice($invoice, $targetEntity)
+	{
+		$targetSocid = $this->getSocIdFromEntity($targetEntity, $invoice->entity);
+
+		if ($targetSocid <= 0) {
+			return -1;
+		}
+
+		$sql = "SELECT rowid FROM " . MAIN_DB_PREFIX . "facture_fourn"
+			. " WHERE fk_soc = " . intval($targetSocid) . " AND entity=" . intval($targetEntity) . " AND ref_supplier='" . $invoice->db->escape($invoice->ref) . "' ";
+
+		$res = $invoice->db->query($sql);
+
+		if (!$res) {
+			$this->error = $invoice->db->error();
+			return -1;
+		}
+
+		$obj = $invoice->db->fetch_object($res);
+
+		if ($obj && $obj->rowid > 0) {
+			return $obj->rowid;
+		}
+
+		return 0;
+	}
+
+	/**
 	 * @param int $idOrderSource
 	 * @param int $toEntity
 	 */

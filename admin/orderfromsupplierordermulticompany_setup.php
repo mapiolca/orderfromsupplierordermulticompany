@@ -189,6 +189,9 @@ setup_print_on_off('OFSOM_UPDATE_ORDER_SOURCE', $langs->trans('OFSOMUpdateOrderS
 //  Passe la commande fournisseur au statut « reçue » (entité A) lors de la clôture de l'expédition (Entité B)
 setup_print_on_off('OFSOM_SET_SUPPLIER_ORDER_RECEIVED_ON_SUPPLIER_SHIPMENT_CLOSED');
 
+// Création automatique de la facture fournisseur lors de la validation d'une facture client vers une entité multicompany
+setup_print_on_off('OFSOM_AUTO_CREATE_SUPPLIER_INVOICE');
+
 print '</table>';
 
 

@@ -158,6 +158,11 @@ class Interfaceorderfromsupplierordermulticompanytrigger
 			// Transmission de la commande fournisseur vers l'entité fournisseur pour création commande client
 			return $this->_cloneOrder($object);
 		}
+		elseif ($action === 'BILL_VALIDATE' && !empty($conf->global->OFSOM_AUTO_CREATE_SUPPLIER_INVOICE)) {
+			/** @var Facture $object */
+			// Création automatique de la facture fournisseur dans l'entité de destination
+			return $this->_cloneInvoice($object);
+		}
 		elseif ($action === 'ORDER_SUPPLIER_RECEIVE') {
 
 			require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
@@ -511,6 +516,44 @@ class Interfaceorderfromsupplierordermulticompanytrigger
 		if ($obj->fk_entity > 0) {
 			$TTELink = new TTELink();
 			$res = $TTELink->cloneOrder($object->id, $obj->fk_entity);
+			$this->setError($TTELink->error);
+			return $res;
+		} else {
+			$this->setError('MissingEntityLink');
+			return -1;
+		}
+	}
+
+	/**
+	 * Crée une facture fournisseur dans l'entité de destination à partir d'une facture client
+	 * @param Facture $object
+	 * @return int <0 if KO, 0 if no action, >0 if OK
+	 */
+	private function _cloneInvoice($object)
+	{
+		global $conf, $langs;
+
+		if (!defined('INC_FROM_DOLIBARR')) define('INC_FROM_DOLIBARR', true);
+		dol_include_once('/orderfromsupplierordermulticompany/config.php');
+
+		$db =& $this->db;
+
+		$res = $db->query("SELECT fk_entity FROM " . MAIN_DB_PREFIX . "thirdparty_entity"
+		                  . " WHERE entity=" . intval($conf->entity)
+		                  . " AND fk_soc=" . intval($object->socid)
+		                  . ' AND fk_entity <> ' . intval($conf->entity));
+		if (!$res) {
+			$this->setError('ErrorSQL');
+			return -1;
+		} elseif ($db->num_rows($res) === 0) {
+			// Pas d'entité liée au tiers → rien à faire
+			return 0;
+		}
+		$obj = $db->fetch_object($res);
+
+		if ($obj->fk_entity > 0) {
+			$TTELink = new TTELink();
+			$res = $TTELink->cloneInvoice($object->id, $obj->fk_entity);
 			$this->setError($TTELink->error);
 			return $res;
 		} else {

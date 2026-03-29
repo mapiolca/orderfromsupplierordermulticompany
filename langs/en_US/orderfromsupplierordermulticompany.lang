@@ -6,3 +6,4 @@ orderfromsupplierordermulticompanySetupPage = Here the connection between one th
 
 OFSOMStatusConf = Status of a supplier order which allows the creation of a linked order
 OFSOMLinkStatusSupplierOrderOrderChild = When receiving a supplier order, classify the linked customer orders as "Processed"
+OFSOM_AUTO_CREATE_SUPPLIER_INVOICE = Automatically create a supplier invoice in the destination entity when validating a customer invoice to a multicompany third party
