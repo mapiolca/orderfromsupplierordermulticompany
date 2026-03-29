@@ -437,8 +437,8 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
 
         $result = $this->loadTables();
 
-		define('INC_FROM_DOLIBARR', true);
-        dol_include_once('/orderfromsupplierordermulticompany/config.php');
+		if (!defined('INC_FROM_DOLIBARR')) define('INC_FROM_DOLIBARR', true);
+        require_once __DIR__ . '/../../config.php';
 
 		// ajout des extrafields
 		$e = new ExtraFields($this->db);
