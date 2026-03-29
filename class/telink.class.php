@@ -5,40 +5,31 @@
  *
  */
 
-class TTELink extends TObjetStd
+class TTELink
 {
+	/** @var int $rowid Primary key */
+	public $rowid;
 
-	function __construct()
-	{
-
-		parent::set_table(MAIN_DB_PREFIX . 'thirdparty_entity');
-		parent::add_champs('fk_entity,fk_soc,entity', 'type=entier;index;');//fk_soc_leaser
-
-		parent::_init_vars();
-		parent::start();
-
-	}
-
-
-	/**
-	 * @var int The object identifier
-	 */
+	/** @var int $id Alias for rowid */
 	public $id;
 
-	/** @var string $table_element Table name in SQL */
+	/** @var string $element */
+	public $element = 'thirdparty_entity';
+
+	/** @var string $table_element */
 	public $table_element = 'thirdparty_entity';
 
-	/** @var string $element Name of the element (tip for better integration in Dolibarr: this value should be the reflection of the class name with ucfirst() function) */
-	public $element = 'thirdparty_entity'; // need to be compatible to be compatible with dolGetElementUrl()  or linkedobjectblock.tpl.php call
-
-	/** @var string $picto a picture file in [@...]/img/object_[...@].png */
+	/** @var string $picto */
 	public $picto = 'orderfromsupplierordermulticompany@orderfromsupplierordermulticompany';
 
-
+	/** @var string $error Last error message */
 	public $error;
 
+	/** @var array $errors Error list */
+	public $errors = array();
+
 	/**
-	 * Entite du dolibarr pour lequel appartient cet config
+	 * Entite du dolibarr pour lequel appartient cette config
 	 * @var int $entity
 	 */
 	public $entity;
@@ -56,15 +47,130 @@ class TTELink extends TObjetStd
 	public $fk_soc;
 
 
-	static function getList(&$ATMdb)
+	/**
+	 * Retourne la liste des liaisons pour l'entité courante
+	 * @return TTELink[]
+	 */
+	static function getList()
 	{
-		global $conf;
+		global $db, $conf;
 
-		$Tab = array();
+		$tab = array();
 
-		$Tab = $ATMdb->ExecuteAsArray("SELECT rowid,fk_soc,fk_entity FROM " . MAIN_DB_PREFIX . "thirdparty_entity WHERE entity IN (" . $conf->entity . ") ORDER BY rowid ASC");
+		$sql = "SELECT rowid, fk_soc, fk_entity FROM " . MAIN_DB_PREFIX . "thirdparty_entity"
+			. " WHERE entity = " . intval($conf->entity) . " ORDER BY rowid ASC";
 
-		return $Tab;
+		$res = $db->query($sql);
+		if ($res) {
+			while ($obj = $db->fetch_object($res)) {
+				$t = new TTELink();
+				$t->rowid     = $obj->rowid;
+				$t->id        = $obj->rowid;
+				$t->fk_soc    = $obj->fk_soc;
+				$t->fk_entity = $obj->fk_entity;
+				$tab[] = $t;
+			}
+		}
+
+		return $tab;
+	}
+
+	/**
+	 * Charge un enregistrement depuis la base
+	 * @param int $id
+	 * @return int 1 if OK, 0 if not found
+	 */
+	public function load($id)
+	{
+		global $db;
+
+		$sql = "SELECT rowid, entity, fk_soc, fk_entity FROM " . MAIN_DB_PREFIX . "thirdparty_entity"
+			. " WHERE rowid = " . intval($id);
+
+		$res = $db->query($sql);
+		if ($res && $db->num_rows($res) > 0) {
+			$obj = $db->fetch_object($res);
+			$this->rowid     = $obj->rowid;
+			$this->id        = $obj->rowid;
+			$this->entity    = $obj->entity;
+			$this->fk_soc    = $obj->fk_soc;
+			$this->fk_entity = $obj->fk_entity;
+			return 1;
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Assigne des valeurs depuis un tableau
+	 * @param array $Tab
+	 */
+	public function set_values($Tab)
+	{
+		foreach (array('entity', 'fk_soc', 'fk_entity') as $field) {
+			if (isset($Tab[$field])) {
+				$this->{$field} = intval($Tab[$field]);
+			}
+		}
+	}
+
+	/**
+	 * Sauvegarde (INSERT ou UPDATE)
+	 * @return int >0 if OK, <0 if KO
+	 */
+	public function save()
+	{
+		global $db;
+
+		$now = "'" . $db->idate(dol_now()) . "'";
+
+		if (empty($this->id)) {
+			$sql = "INSERT INTO " . MAIN_DB_PREFIX . "thirdparty_entity"
+				. " (entity, fk_soc, fk_entity, date_cre, date_maj)"
+				. " VALUES ("
+				. intval($this->entity) . ", "
+				. intval($this->fk_soc) . ", "
+				. intval($this->fk_entity) . ", "
+				. $now . ", "
+				. $now
+				. ")";
+
+			$res = $db->query($sql);
+			if ($res) {
+				$this->id    = $db->last_insert_id(MAIN_DB_PREFIX . "thirdparty_entity");
+				$this->rowid = $this->id;
+				return $this->id;
+			}
+		} else {
+			$sql = "UPDATE " . MAIN_DB_PREFIX . "thirdparty_entity SET"
+				. " entity = " . intval($this->entity)
+				. ", fk_soc = " . intval($this->fk_soc)
+				. ", fk_entity = " . intval($this->fk_entity)
+				. ", date_maj = " . $now
+				. " WHERE rowid = " . intval($this->id);
+
+			$res = $db->query($sql);
+			if ($res) return $this->id;
+		}
+
+		$this->error = $db->lasterror();
+		return -1;
+	}
+
+	/**
+	 * Supprime l'enregistrement
+	 * @return int 1 if OK, <0 if KO
+	 */
+	public function delete()
+	{
+		global $db;
+
+		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "thirdparty_entity WHERE rowid = " . intval($this->id);
+		$res = $db->query($sql);
+		if ($res) return 1;
+
+		$this->error = $db->lasterror();
+		return -1;
 	}
 
 
@@ -72,87 +178,80 @@ class TTELink extends TObjetStd
 	 * Retourne l'ID du tiers correspondant à l'entité ciblée dans l'entité courante
 	 * @param int $targetEntity
 	 * @param int $currentEntity
-	 * @return int 	<=0 if KO, >0 if OK
+	 * @return int <=0 if KO, >0 if OK
 	 */
-	public function getSocIdFromEntity($targetEntity, $currentEntity = false){
+	public function getSocIdFromEntity($targetEntity, $currentEntity = false)
+	{
 		global $db, $conf, $langs;
 
-		if(!$currentEntity) {
+		if (!$currentEntity) {
 			$currentEntity = $conf->entity;
 		}
 
 		$res = $db->query("SELECT fk_soc FROM " . MAIN_DB_PREFIX . "thirdparty_entity WHERE entity=" . intval($currentEntity) . " AND fk_entity=" . intval($targetEntity));
-		if($res){
-			if($db->num_rows($res)>0){
+		if ($res) {
+			if ($db->num_rows($res) > 0) {
 				$obj = $db->fetch_object($res);
 				return $obj->fk_soc;
-			}
-			else{
+			} else {
 				$this->error = $langs->trans('MissingEntityLinkBetweenSoc');
 				return 0;
 			}
-		}
-		else
-		{
-			$this->error = $db->error();
+		} else {
+			$this->error = $db->lasterror();
 			return -1;
 		}
 	}
+
 	/**
-	 * TODO : trouver un nom qui veut dire quelque chose pour cette methode
-	 * Retourne l'ID du tiers correspondant à la société fournie depuis  l'entité  courante mais pour l'entité liée
+	 * Retourne l'ID du tiers correspondant à la société fournie depuis l'entité courante mais pour l'entité liée
 	 * @param int $socid
 	 * @param int $currentEntity
-	 * @return int 	<=0 if KO, >0 if OK
+	 * @return int <=0 if KO, >0 if OK
 	 */
-	public function getSocIdForEntityCustomerFromSupplierEntitySocId($socid, $currentEntity = false){
+	public function getSocIdForEntityCustomerFromSupplierEntitySocId($socid, $currentEntity = false)
+	{
 		$customerEntity = $this->getSocEntityFromSocId($socid, $currentEntity);
-		if($customerEntity > 0){
-			// Récupération du soc id du tiers client de l'expédition
+		if ($customerEntity > 0) {
 			$customerId = $this->getSocIdFromEntity($currentEntity, $customerEntity);
-			if($customerId) {
+			if ($customerId) {
 				return intval($customerId);
 			}
-		}
-		elseif ($customerEntity < 0){
+		} elseif ($customerEntity < 0) {
 			return -1;
 		}
 
 		return 0;
 	}
 
-
-
 	/**
-	 * Retourne l'entité correspondant  au tiers dans l'entité courante
-	 * @param $fk_soc
+	 * Retourne l'entité correspondant au tiers dans l'entité courante
+	 * @param int $fk_soc
 	 * @param int $currentEntity
-	 * @return int	<=0 if KO, >0 if OK
+	 * @return int <=0 if KO, >0 if OK
 	 */
-	public function getSocEntityFromSocId($fk_soc, $currentEntity = false){
+	public function getSocEntityFromSocId($fk_soc, $currentEntity = false)
+	{
 		global $db, $conf, $langs;
 
-		if(!$currentEntity) {
+		if (!$currentEntity) {
 			$currentEntity = $conf->entity;
 		}
+
 		$res = $db->query("SELECT fk_entity FROM " . MAIN_DB_PREFIX . "thirdparty_entity WHERE entity=" . intval($currentEntity) . " AND fk_soc=" . intval($fk_soc) . ' AND fk_entity <> ' . intval($currentEntity));
-		if($res){
-			if($db->num_rows($res)>0){
+		if ($res) {
+			if ($db->num_rows($res) > 0) {
 				$obj = $db->fetch_object($res);
 				return $obj->fk_entity;
-			}
-			else{
+			} else {
 				$this->error = $langs->trans('MissingEntityLinkBetweenSoc');
 				return 0;
 			}
-		}
-		else
-		{
-			$this->error = $db->error();
+		} else {
+			$this->error = $db->lasterror();
 			return -1;
 		}
 	}
-
 
 
 	/**
@@ -223,7 +322,7 @@ class TTELink extends TObjetStd
 			}
 
 			// Le prix unitaire de la facture client devient le prix unitaire de la facture fournisseur
-			$lineInvoice->pu_ht = $line->subprice;
+			$lineInvoice->pu_ht    = $line->subprice;
 			$lineInvoice->subprice = $line->subprice;
 
 			$fi->lines[] = $lineInvoice;
@@ -243,18 +342,9 @@ class TTELink extends TObjetStd
 		}
 
 		// Lien entre la facture client et la facture fournisseur dans la table element_element
-		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "element_element (";
-		$sql .= "fk_source";
-		$sql .= ", sourcetype";
-		$sql .= ", fk_target";
-		$sql .= ", targettype";
-		$sql .= ") VALUES (";
-		$sql .= intval($idInvoiceSource);
-		$sql .= ", 'facture'";
-		$sql .= ", " . intval($fi->id);
-		$sql .= ", 'invoice_supplier'";
-		$sql .= ")";
-		$res = $db->query($sql);
+		$sql  = "INSERT INTO " . MAIN_DB_PREFIX . "element_element (fk_source, sourcetype, fk_target, targettype) VALUES (";
+		$sql .= intval($idInvoiceSource) . ", 'facture', " . intval($fi->id) . ", 'invoice_supplier')";
+		$res  = $db->query($sql);
 		if (!$res) {
 			return -6;
 		}
@@ -282,7 +372,7 @@ class TTELink extends TObjetStd
 		$res = $invoice->db->query($sql);
 
 		if (!$res) {
-			$this->error = $invoice->db->error();
+			$this->error = $invoice->db->lasterror();
 			return -1;
 		}
 
@@ -306,26 +396,25 @@ class TTELink extends TObjetStd
 		$cf = new CommandeFournisseur($db);
 		$cf->fetch($idOrderSource);
 
-		$fk_soc = $this->getSocIdFromEntity($conf->entity,$toEntity);
-		if($fk_soc>0) {
+		$fk_soc = $this->getSocIdFromEntity($conf->entity, $toEntity);
+		if ($fk_soc > 0) {
 
 			dol_include_once('/commande/class/commande.class.php');
 
-			$existingOrderId =  $this->getOrderIdFromSupplierOrder($cf, $toEntity);
+			$existingOrderId = $this->getOrderIdFromSupplierOrder($cf, $toEntity);
 			if ($existingOrderId > 0) {
-				// la facture commande déjà dans le système en face. On la supprime
+				// la commande existe déjà dans le système en face. On la supprime
 				$o = new Commande($db);
 
 				$previous_entity = $conf->entity;
 				$conf->entity = $toEntity;
 				if ($o->fetch($existingOrderId) > 0) {
 					$delRes = $o->delete($user);
-					if($delRes<0){
+					if ($delRes < 0) {
 						$this->error = $o->error;
 						return -3;
 					}
-				}
-				else{
+				} else {
 					return -2;
 				}
 
@@ -365,11 +454,9 @@ class TTELink extends TObjetStd
 							$lineOrder->pa_ht = $producttmp->pmp;
 						}
 					}
-
 				}
 
-				// Avoir une liason entre les lignes de la commande fournisseur de l'entité A et les lignes de la commande créée coté entité B,
-				// ça arrange bien, car il n'est pas possible de connaitre ID de la ligne en cours de création. (je sais de rien... bisous)
+				// Liaison entre les lignes de la commande fournisseur de l'entité A et les lignes de la commande créée côté entité B
 				$lineOrder->array_options['options_supplier_order_det_source'] = $line->id;
 
 				$o->lines[] = $lineOrder;
@@ -386,29 +473,26 @@ class TTELink extends TObjetStd
 				$this->error = $o->error;
 				return -4;
 			} else {
-				if ((float)DOL_VERSION>=14.0) {
+				if ((float)DOL_VERSION >= 14.0) {
 					//Cannot use $o->copy_linked_contact because it copy fk_c_type_contact from object order_supplier but we need order
 					//So We recode the method here
 					$contacts = $cf->liste_contact(-1, 'external');
 					if (!empty($contacts)) {
 						$o->delete_linked_contact('external');
-						foreach ($contacts as $contact)
-						{
-							$sqltypeContact='SELECT rowid FROM '.MAIN_DB_PREFIX.'c_type_contact WHERE element=\''.$o->element.'\'';
-							$sqltypeContact.=' AND source=\''.$o->db->escape($contact['source']).'\'';
-							$sqltypeContact.=' AND code=\''.$o->db->escape($contact['code']).'\'';
-							$resqlCopyContact=$o->db->query($sqltypeContact);
+						foreach ($contacts as $contact) {
+							$sqltypeContact  = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . 'c_type_contact WHERE element=\'' . $o->element . '\'';
+							$sqltypeContact .= ' AND source=\'' . $o->db->escape($contact['source']) . '\'';
+							$sqltypeContact .= ' AND code=\'' . $o->db->escape($contact['code']) . '\'';
+							$resqlCopyContact = $o->db->query($sqltypeContact);
 							if (!$resqlCopyContact) {
-								setEventMessage($o->db->lasterror,'errors');
+								setEventMessage($o->db->lasterror(), 'errors');
 							} else {
-								$obj=$o->db->fetch_object($resqlCopyContact);
-								if ($o->add_contact($contact['id'], $obj->rowid, $contact['source']) < 0)
-								{
-									setEventMessage($o->db->lasterror,'errors');
+								$obj = $o->db->fetch_object($resqlCopyContact);
+								if ($o->add_contact($contact['id'], $obj->rowid, $contact['source']) < 0) {
+									setEventMessage($o->db->lasterror(), 'errors');
 								}
 							}
 						}
-
 					}
 				}
 
@@ -429,33 +513,21 @@ class TTELink extends TObjetStd
 							$n->object_type = $o->element;
 							$n->save($PDOdb);
 						}
-
 					}
 				}
 
-				// Le changement d'entité doit se faire après le changement d'entité, sinon, le fetch échoue
-				$res = $db->query("UPDATE " . MAIN_DB_PREFIX . "commande
-						 SET entity=" . $toEntity . "
-						 WHERE rowid=" . $o->id); // on transporte la commande dans l'autre entité
+				// Le changement d'entité doit se faire après la création, sinon le fetch échoue
+				$res = $db->query("UPDATE " . MAIN_DB_PREFIX . "commande SET entity=" . $toEntity . " WHERE rowid=" . $o->id);
 
-				if(!$res){
+				if (!$res) {
 					return -5;
 				}
 
-				//Lien entre la commande fournisseur et la commande client dans la table element_element
-				$sql = "INSERT INTO " . MAIN_DB_PREFIX . "element_element (";
-				$sql .= "fk_source";
-				$sql .= ", sourcetype";
-				$sql .= ", fk_target";
-				$sql .= ", targettype";
-				$sql .= ") VALUES (";
-				$sql .= $idOrderSource;
-				$sql .= ", 'commandefourn'";
-				$sql .= ", " . $o->id;
-				$sql .= ", 'commande'";
-				$sql .= ")";
-				$res = $db->query($sql);
-				if(!$res){
+				// Lien entre la commande fournisseur et la commande client dans la table element_element
+				$sql  = "INSERT INTO " . MAIN_DB_PREFIX . "element_element (fk_source, sourcetype, fk_target, targettype) VALUES (";
+				$sql .= $idOrderSource . ", 'commandefourn', " . $o->id . ", 'commande')";
+				$res  = $db->query($sql);
+				if (!$res) {
 					return -6;
 				}
 			}
@@ -463,38 +535,35 @@ class TTELink extends TObjetStd
 			if (!empty($conf->global->OFSOM_DONT_FORCE_BUY_PRICE_WITH_SELL_PRICE)) $conf->global->ForceBuyingPriceIfNull = $oldval;
 
 			return $orderCreatedRes;
-		}
-		else
-		{
+		} else {
 			return -1;
 		}
 	}
 
 	/**
-	 * Permet de recupérer l'Id de la commande client coté entité fournisseur à partir de la commande fournisseur coté entité cliente
-	 * @param CommandeFournisseur $supplierOrder (coté entité cliente)
+	 * Permet de récupérer l'Id de la commande client côté entité fournisseur à partir de la commande fournisseur côté entité cliente
+	 * @param CommandeFournisseur $supplierOrder (côté entité cliente)
 	 * @param int $targetEntity entité cible (entité fournisseur)
-	 * @param int $targetSocid societé cible (coté entité fournisseur)
-	 * @return int 	<=0 if KO, >0 if OK
+	 * @param int $targetSocid société cible (côté entité fournisseur)
+	 * @return int <=0 if KO, >0 if OK
 	 */
-	public function getOrderIdFromSupplierOrder($supplierOrder, $targetEntity, $targetSocid = false){
-
-		if(!$targetSocid){
+	public function getOrderIdFromSupplierOrder($supplierOrder, $targetEntity, $targetSocid = false)
+	{
+		if (!$targetSocid) {
 			$targetSocid = $this->getSocIdFromEntity($targetEntity, $supplierOrder->entity);
 		}
 
-		if($targetSocid<=0){
+		if ($targetSocid <= 0) {
 			return -1;
 		}
 
-
-		$sql = "SELECT rowid FROM " . MAIN_DB_PREFIX . "commande "
-			 . " WHERE fk_soc = ".intval($targetSocid)." AND entity=" . intval($targetEntity) . " AND ref_client='" . $supplierOrder->db->escape($supplierOrder->ref) . "' ";
+		$sql = "SELECT rowid FROM " . MAIN_DB_PREFIX . "commande"
+			. " WHERE fk_soc = " . intval($targetSocid) . " AND entity=" . intval($targetEntity) . " AND ref_client='" . $supplierOrder->db->escape($supplierOrder->ref) . "' ";
 
 		$res = $supplierOrder->db->query($sql);
 
-		if(!$res){
-			$this->error = $supplierOrder->db->error();
+		if (!$res) {
+			$this->error = $supplierOrder->db->lasterror();
 			return -1;
 		}
 
@@ -507,39 +576,35 @@ class TTELink extends TObjetStd
 		return 0;
 	}
 
-
 	/**
 	 * Permet de récupérer l'ID de la commande client créée sur l'entité fournisseur à partir de la commande fournisseur de l'entité cliente
 	 *
-	 * @param Commande $order (coté entité fournisseur)
+	 * @param Commande $order (côté entité fournisseur)
 	 * @param int $targetEntity (entité cliente)
-	 * @param int $targetSocid (coté entité cliente)
-	 * @return int supplier order 	<=0 if KO, >0 if OK
+	 * @param int $targetSocid (côté entité cliente)
+	 * @return int supplier order <=0 if KO, >0 if OK
 	 */
-	public function getSupplierOrderIdFromOrder($order, $targetEntity = false, $targetSocid = false){
-
-		if(!$targetEntity){
-			// récupère l'entité cliente à l'origine de la commande à partir du socid de la commande de l'entité fournisseur
+	public function getSupplierOrderIdFromOrder($order, $targetEntity = false, $targetSocid = false)
+	{
+		if (!$targetEntity) {
 			$targetEntity = $this->getSocEntityFromSocId($order->socid, $order->entity);
 		}
 
-
-		if(!$targetSocid){
-			// récupère id correspondant à la société fournisseur sur l'entité cliente à l'origine de la commande à partir des id d'entité client et fournisseur
+		if (!$targetSocid) {
 			$targetSocid = $this->getSocIdFromEntity($order->entity, $targetEntity);
 		}
 
-		if($targetSocid<=0){
+		if ($targetSocid <= 0) {
 			return -1;
 		}
 
-		$sql = "SELECT rowid FROM " . MAIN_DB_PREFIX . "commande_fournisseur "
-			. " WHERE fk_soc = ".intval($targetSocid)." AND entity=" . intval($targetEntity) . " AND ref='" . $order->db->escape($order->ref_client) . "' ";
+		$sql = "SELECT rowid FROM " . MAIN_DB_PREFIX . "commande_fournisseur"
+			. " WHERE fk_soc = " . intval($targetSocid) . " AND entity=" . intval($targetEntity) . " AND ref='" . $order->db->escape($order->ref_client) . "' ";
 
 		$res = $order->db->query($sql);
 
-		if(!$res){
-			$this->error = $order->db->error();
+		if (!$res) {
+			$this->error = $order->db->lasterror();
 			return -2;
 		}
 
@@ -550,5 +615,4 @@ class TTELink extends TObjetStd
 
 		return 0;
 	}
-
 }

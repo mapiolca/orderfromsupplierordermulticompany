@@ -130,10 +130,7 @@ class Interfaceorderfromsupplierordermulticompanytrigger
 			// si l'option de reception auto des produit sur la commande fournisseur de l'entité client alors il faut vérifier si un entrepot de reception est défini dans le cas au la societé founisseur est une entité Dolibarr
 			// Dans ce il faut bloquer la validation si l'entrepot de reception n'est pas fournis
 			if(!empty($conf->global->OFSOM_SET_SUPPLIER_ORDER_RECEIVED_ON_SUPPLIER_SHIPMENT_CLOSED) && empty($object->array_options['options_reception_warehouse'])) {
-				// parceque c'est du TObject .... il faut donc tout transporter
-				define('INC_FROM_DOLIBARR', true);
-				require_once __DIR__ . '/../../config.php';
-				require_once __DIR__ . '/../../class/telink.class.php';
+					dol_include_once('/orderfromsupplierordermulticompany/class/telink.class.php');
 				$telink = new TTELink();
 				$res = $telink->getSocEntityFromSocId($object->socid);
 				if($res > 0){
@@ -495,8 +492,7 @@ class Interfaceorderfromsupplierordermulticompanytrigger
 
 		global $conf, $langs;
 
-		define('INC_FROM_DOLIBARR', true);
-		dol_include_once('/orderfromsupplierordermulticompany/config.php');
+		dol_include_once('/orderfromsupplierordermulticompany/class/telink.class.php');
 
 		$db =& $this->db;
 
@@ -533,8 +529,7 @@ class Interfaceorderfromsupplierordermulticompanytrigger
 	{
 		global $conf, $langs;
 
-		if (!defined('INC_FROM_DOLIBARR')) define('INC_FROM_DOLIBARR', true);
-		dol_include_once('/orderfromsupplierordermulticompany/config.php');
+		dol_include_once('/orderfromsupplierordermulticompany/class/telink.class.php');
 
 		$db =& $this->db;
 
@@ -570,10 +565,7 @@ class Interfaceorderfromsupplierordermulticompanytrigger
 	public function receiveSupplierOrderFromShipment($shipment){
 		global $user, $langs;
 		$langs->load('orderfromsupplierordermulticompany@orderfromsupplierordermulticompany');
-		// parceque c'est du TObject .... il faut donc tout transporter
-		define('INC_FROM_DOLIBARR', true);
-		require_once __DIR__ . '/../../config.php';
-		require_once __DIR__ . '/../../class/telink.class.php';
+		dol_include_once('/orderfromsupplierordermulticompany/class/telink.class.php');
 
 		$TTELink = new TTELink();
 		// Récupération de l'entité correspondant au tiers client de l'expédition,

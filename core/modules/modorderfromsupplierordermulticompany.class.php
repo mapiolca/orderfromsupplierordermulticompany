@@ -437,39 +437,25 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
 
         $result = $this->loadTables();
 
-		if (!defined('INC_FROM_DOLIBARR')) define('INC_FROM_DOLIBARR', true);
-        require_once __DIR__ . '/../../config.php';
-
 		// ajout des extrafields
 		$e = new ExtraFields($this->db);
 
 		// Ajout d'un entrepôt de reception dans le cas ou la conf OFSOM_SET_SUPPLIER_ORDER_RECEIVED_ON_SUPPLIER_SHIPMENT_CLOSED est activée
-		$param = array (
-			'options' =>
-				array (
-					'Entrepot:product/stock/class/entrepot.class.php::statut=1' => NULL,
-				),
+		$param = array(
+			'options' => array(
+				'Entrepot:product/stock/class/entrepot.class.php::statut=1' => null,
+			),
 		);
-		$label =  'AutoReceptionWarehouse';
-		$help =  'AutoReceptionWarehouseHelp';
-		$key = 'reception_warehouse';
-		$e->addExtraField($key, $label, 'link', 1, 10, 'commande_fournisseur', 0, 0, '', $param, 0, '', 3, $help, '', 0, 'ofsom@orderfromsupplierordermulticompany','!empty($conf->global->OFSOM_SET_SUPPLIER_ORDER_RECEIVED_ON_SUPPLIER_SHIPMENT_CLOSED)');
+		$label = 'AutoReceptionWarehouse';
+		$help  = 'AutoReceptionWarehouseHelp';
+		$key   = 'reception_warehouse';
+		$e->addExtraField($key, $label, 'link', 1, 10, 'commande_fournisseur', 0, 0, '', $param, 0, '', 3, $help, '', 0, 'ofsom@orderfromsupplierordermulticompany', '!empty($conf->global->OFSOM_SET_SUPPLIER_ORDER_RECEIVED_ON_SUPPLIER_SHIPMENT_CLOSED)');
 
-
-		// ajoute un extrafield de laison entre la ligne de commande fournisseur et la ligne de commande créé
-		$label =  'supplierOrderDetSource';
-		$help =  'supplierOrderDetSourceHelp';
-		$key = 'supplier_order_det_source';
+		// Extrafield de liaison entre la ligne de commande fournisseur et la ligne de commande créée
+		$label = 'supplierOrderDetSource';
+		$help  = 'supplierOrderDetSourceHelp';
+		$key   = 'supplier_order_det_source';
 		$e->addExtraField($key, $label, 'int', 1, 10, 'commandedet', 0, 0, '', '', 0, '', 0, $help, '', 0, 'ofsom@orderfromsupplierordermulticompany');
-
-
-
-
-		$PDOdb=new TPDOdb;
-		$PDOdb->db->debug=true;
-
-		$o=new TTELink();
-		$o->init_db_by_vars($PDOdb);
 
         return $this->_init($sql, $options);
     }
