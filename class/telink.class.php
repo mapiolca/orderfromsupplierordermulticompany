@@ -300,9 +300,11 @@ class TTELink
 		}
 
 		$fi = new FactureFournisseur($db);
+		$fi->type = FactureFournisseur::TYPE_STANDARD;
 		$fi->date = $facture->date;
 		$fi->ref_supplier = $facture->ref;
 		$fi->socid = $fk_soc;
+		$fi->libelle = $facture->ref;
 		$fi->fk_project = $facture->fk_project;
 		$fi->note_public = $facture->note_public;
 		$fi->note_private = $facture->note_private;

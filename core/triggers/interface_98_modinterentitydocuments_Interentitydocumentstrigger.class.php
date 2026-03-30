@@ -549,7 +549,9 @@ class Interfaceinterentitydocumentstrigger
 		if ($obj->fk_entity > 0) {
 			$TTELink = new TTELink();
 			$res = $TTELink->cloneInvoice($object->id, $obj->fk_entity);
-			$this->setError($TTELink->error);
+			if ($res < 0) {
+				$this->setError($TTELink->error);
+			}
 			return $res;
 		} else {
 			$this->setError('MissingEntityLink');
