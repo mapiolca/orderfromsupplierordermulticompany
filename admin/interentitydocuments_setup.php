@@ -14,7 +14,9 @@
  */
 
 // Dolibarr environment
-require('../config.php');
+if (is_file('../../main.inc.php')) require('../../main.inc.php');
+elseif (is_file('../../../main.inc.php')) require('../../../main.inc.php');
+else die('Include of main fails');
 
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
