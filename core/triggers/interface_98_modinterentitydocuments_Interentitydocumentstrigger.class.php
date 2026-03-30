@@ -18,7 +18,7 @@
 
 /**
  *    \file        core/triggers/interface_99_modMyodule_Mytrigger.class.php
- *    \ingroup    orderfromsupplierordermulticompany
+ *    \ingroup    interentitydocuments
  *    \brief        Sample trigger
  *    \remarks    You can create other triggers by copying this one
  *                - File name should be either:
@@ -33,7 +33,7 @@
 /**
  * Trigger class
  */
-class Interfaceorderfromsupplierordermulticompanytrigger
+class Interfaceinterentitydocumentstrigger
 {
 
 	private $db;
@@ -54,7 +54,7 @@ class Interfaceorderfromsupplierordermulticompanytrigger
 			. "They are provided for tutorial purpose only.";
 		// 'development', 'experimental', 'dolibarr' or version
 		$this->version = 'development';
-		$this->picto = 'orderfromsupplierordermulticompany@orderfromsupplierordermulticompany';
+		$this->picto = 'interentitydocuments@interentitydocuments';
 		$this->errors=array();
 	}
 
@@ -130,7 +130,7 @@ class Interfaceorderfromsupplierordermulticompanytrigger
 			// si l'option de reception auto des produit sur la commande fournisseur de l'entité client alors il faut vérifier si un entrepot de reception est défini dans le cas au la societé founisseur est une entité Dolibarr
 			// Dans ce il faut bloquer la validation si l'entrepot de reception n'est pas fournis
 			if(!empty($conf->global->OFSOM_SET_SUPPLIER_ORDER_RECEIVED_ON_SUPPLIER_SHIPMENT_CLOSED) && empty($object->array_options['options_reception_warehouse'])) {
-					dol_include_once('/orderfromsupplierordermulticompany/class/telink.class.php');
+					dol_include_once('/interentitydocuments/class/telink.class.php');
 				$telink = new TTELink();
 				$res = $telink->getSocEntityFromSocId($object->socid);
 				if($res > 0){
@@ -209,7 +209,7 @@ class Interfaceorderfromsupplierordermulticompanytrigger
 			if (!empty($conf->global->OFSOM_LINK_STATUSSUPPLIERORDER_ORDERCHILD)) {
 				$error = 0;
 
-				$langs->load('orderfromsupplierordermulticompany@orderfromsupplierordermulticompany');
+				$langs->load('interentitydocuments@interentitydocuments');
 
 				//récup réception créée
 				$sql = "SELECT MAX(rowid) as id FROM " . MAIN_DB_PREFIX . "commande_fournisseur_dispatch";
@@ -492,7 +492,7 @@ class Interfaceorderfromsupplierordermulticompanytrigger
 
 		global $conf, $langs;
 
-		dol_include_once('/orderfromsupplierordermulticompany/class/telink.class.php');
+		dol_include_once('/interentitydocuments/class/telink.class.php');
 
 		$db =& $this->db;
 
@@ -529,7 +529,7 @@ class Interfaceorderfromsupplierordermulticompanytrigger
 	{
 		global $conf, $langs;
 
-		dol_include_once('/orderfromsupplierordermulticompany/class/telink.class.php');
+		dol_include_once('/interentitydocuments/class/telink.class.php');
 
 		$db =& $this->db;
 
@@ -564,8 +564,8 @@ class Interfaceorderfromsupplierordermulticompanytrigger
 	 */
 	public function receiveSupplierOrderFromShipment($shipment){
 		global $user, $langs;
-		$langs->load('orderfromsupplierordermulticompany@orderfromsupplierordermulticompany');
-		dol_include_once('/orderfromsupplierordermulticompany/class/telink.class.php');
+		$langs->load('interentitydocuments@interentitydocuments');
+		dol_include_once('/interentitydocuments/class/telink.class.php');
 
 		$TTELink = new TTELink();
 		// Récupération de l'entité correspondant au tiers client de l'expédition,
@@ -816,7 +816,7 @@ class Interfaceorderfromsupplierordermulticompanytrigger
 		global $langs;
 
 		if(empty($langs->tab_translate[$error])){
-			$langs->load('orderfromsupplierordermulticompany@orderfromsupplierordermulticompany');
+			$langs->load('interentitydocuments@interentitydocuments');
 			$error = $langs->trans($error);
 		}
 

@@ -1,2 +1,2 @@
 <?php
-dol_include_once('/orderfromsupplierordermulticompany/class/telink.class.php');
+dol_include_once('/interentitydocuments/class/telink.class.php');

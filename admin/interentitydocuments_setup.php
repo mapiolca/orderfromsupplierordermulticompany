@@ -8,8 +8,8 @@
  */
 
 /**
- * \file      admin/orderfromsupplierordermulticompany_setup.php
- * \ingroup   orderfromsupplierordermulticompany
+ * \file      admin/interentitydocuments_setup.php
+ * \ingroup   interentitydocuments
  * \brief     Module setup page
  */
 
@@ -18,11 +18,11 @@ require('../config.php');
 
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
-require_once '../lib/orderfromsupplierordermulticompany.lib.php';
-dol_include_once('/orderfromsupplierordermulticompany/class/telink.class.php');
+require_once '../lib/interentitydocuments.lib.php';
+dol_include_once('/interentitydocuments/class/telink.class.php');
 
 // Translations
-$langs->load("orderfromsupplierordermulticompany@orderfromsupplierordermulticompany");
+$langs->load("interentitydocuments@interentitydocuments");
 
 // Access control
 if (!$user->admin) {
@@ -71,7 +71,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'save') {
  * View
  */
 
-$page_name = "orderfromsupplierordermulticompanySetup";
+$page_name = "interentitydocumentsSetup";
 llxHeader('', $langs->trans($page_name));
 
 // Subheader
@@ -79,12 +79,12 @@ $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">' . $langs->trans(
 print_fiche_titre($langs->trans($page_name), $linkback);
 
 // Configuration header
-$head   = orderfromsupplierordermulticompanyAdminPrepareHead();
+$head   = interentitydocumentsAdminPrepareHead();
 $notab  = -1;
-print dol_get_fiche_head($head, 'settings', $langs->trans("Module104200Name"), $notab, "orderfromsupplierordermulticompany@orderfromsupplierordermulticompany");
+print dol_get_fiche_head($head, 'settings', $langs->trans("Module104200Name"), $notab, "interentitydocuments@interentitydocuments");
 print dol_get_fiche_end($notab);
 
-echo '<h3>' . $langs->trans("orderfromsupplierordermulticompanySetupPage") . '</h3>';
+echo '<h3>' . $langs->trans("interentitydocumentsSetupPage") . '</h3>';
 print '<div class="warning">' . $langs->trans('ThisEntityMappingNeedToBeDoneOnEachEntityListed') . '</div>';
 
 $TLink = TTELink::getList();

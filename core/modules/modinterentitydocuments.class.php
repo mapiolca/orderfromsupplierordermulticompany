@@ -17,18 +17,18 @@
  */
 
 /**
- * 	\defgroup	orderfromsupplierordermulticompany	orderfromsupplierordermulticompany module
- * 	\brief		orderfromsupplierordermulticompany module descriptor.
- * 	\file		core/modules/modorderfromsupplierordermulticompany.class.php
- * 	\ingroup	orderfromsupplierordermulticompany
- * 	\brief		Description and activation file for module orderfromsupplierordermulticompany
+ * 	\defgroup	interentitydocuments	interentitydocuments module
+ * 	\brief		interentitydocuments module descriptor.
+ * 	\file		core/modules/modinterentitydocuments.class.php
+ * 	\ingroup	interentitydocuments
+ * 	\brief		Description and activation file for module interentitydocuments
  */
 include_once DOL_DOCUMENT_ROOT . "/core/modules/DolibarrModules.class.php";
 
 /**
- * Description and activation class for module orderfromsupplierordermulticompany
+ * Description and activation class for module interentitydocuments
  */
-class modorderfromsupplierordermulticompany extends DolibarrModules
+class modinterentitydocuments extends DolibarrModules
 {
 
     /**
@@ -47,19 +47,19 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
         // (See in Home -> System information -> Dolibarr for list of used modules id).
         $this->numero = 104200; // 104000 to 104999 for ATM CONSULTING
         // Key text used to identify module (for permissions, menus, etc...)
-        $this->rights_class = 'orderfromsupplierordermulticompany';
+        $this->rights_class = 'interentitydocuments';
 
         // Family can be 'crm','financial','hr','projects','products','ecm','technic','other'
         // It is used to group modules in module setup page
         $this->family = "other";
         // Module label (no space allowed)
-        // used if translation strinpplierordermulticompany 	Description of module orderfromsupplierordermulticompanyg 'ModuleXXXName' not found
+        // used if translation strinpplierordermulticompany 	Description of module interentitydocumentsg 'ModuleXXXName' not found
         // (where XXX is value of numeric property 'numero' of module)
         $this->name = preg_replace('/^mod/i', '', get_class($this));
         // Module description
         // used if translation string 'ModuleXXXDesc' not found
         // (where XXX is value of numeric property 'numero' of module)
-        $this->description = "Description of module orderfromsupplierordermulticompany";
+        $this->description = "Description of module interentitydocuments";
         // Possible values for version are: 'development', 'experimental' or version
         $this->version = '2.3.1';
         // Key used in llx_const table to save module status enabled/disabled
@@ -73,11 +73,11 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
         // use this->picto='pictovalue'
         // If file is in module/img directory under name object_pictovalue.png
         // use this->picto='pictovalue@module'
-        $this->picto = 'module.svg@orderfromsupplierordermulticompany'; // mypicto@orderfromsupplierordermulticompany
+        $this->picto = 'module.svg@interentitydocuments'; // mypicto@interentitydocuments
         // Defined all module parts (triggers, login, substitutions, menus, css, etc...)
-        // for default path (eg: /orderfromsupplierordermulticompany/core/xxxxx) (0=disable, 1=enable)
-        // for specific path of parts (eg: /orderfromsupplierordermulticompany/core/modules/barcode)
-        // for specific css file (eg: /orderfromsupplierordermulticompany/css/orderfromsupplierordermulticompany.css.php)
+        // for default path (eg: /interentitydocuments/core/xxxxx) (0=disable, 1=enable)
+        // for specific path of parts (eg: /interentitydocuments/core/modules/barcode)
+        // for specific css file (eg: /interentitydocuments/css/interentitydocuments.css.php)
         $this->module_parts = array(
             // Set this to 1 if module has its own trigger directory
             'triggers' => 1,
@@ -92,7 +92,7 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
             // Set this to 1 if module has its own models directory
             //'models' => 0,
             // Set this to relative path of css if module has its own css file
-            //'css' => '/orderfromsupplierordermulticompany/css/mycss.css.php',
+            //'css' => '/interentitydocuments/css/mycss.css.php',
             // Set here all hooks context managed by module
             //'hooks' => array('hookcontext1','hookcontext2')
             // Set here all workflow context managed by module
@@ -100,12 +100,12 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
         );
 
         // Data directories to create when module is enabled.
-        // Example: this->dirs = array("/orderfromsupplierordermulticompany/temp");
+        // Example: this->dirs = array("/interentitydocuments/temp");
         $this->dirs = array();
 
         // Config pages. Put here list of php pages
-        // stored into orderfromsupplierordermulticompany/admin directory, used to setup module.
-        $this->config_page_url = array("orderfromsupplierordermulticompany_setup.php@orderfromsupplierordermulticompany");
+        // stored into interentitydocuments/admin directory, used to setup module.
+        $this->config_page_url = array("interentitydocuments_setup.php@interentitydocuments");
 
         // Dependencies
         // List of modules id that must be enabled if this module is enabled
@@ -116,7 +116,7 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
         $this->phpmin = array(5, 3);
         // Minimum version of Dolibarr required by module
         $this->need_dolibarr_version = array(3, 2);
-        $this->langfiles = array("orderfromsupplierordermulticompany@orderfromsupplierordermulticompany"); // langfiles@orderfromsupplierordermulticompany
+        $this->langfiles = array("interentitydocuments@interentitydocuments"); // langfiles@interentitydocuments
         // Constants
         // List of particular constants to add when module is enabled
         // (key, 'chaine', value, desc, visible, 'current' or 'allentities', deleteonunactive)
@@ -142,9 +142,9 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
         // Example:
         $this->tabs = array(
             //	// To add a new tab identified by code tabname1
-            //	'objecttype:+tabname1:Title1:langfile@orderfromsupplierordermulticompany:$user->rights->orderfromsupplierordermulticompany->read:/orderfromsupplierordermulticompany/mynewtab1.php?id=__ID__',
+            //	'objecttype:+tabname1:Title1:langfile@interentitydocuments:$user->rights->interentitydocuments->read:/interentitydocuments/mynewtab1.php?id=__ID__',
             //	// To add another new tab identified by code tabname2
-            //	'objecttype:+tabname2:Title2:langfile@orderfromsupplierordermulticompany:$user->rights->othermodule->read:/orderfromsupplierordermulticompany/mynewtab2.php?id=__ID__',
+            //	'objecttype:+tabname2:Title2:langfile@interentitydocuments:$user->rights->othermodule->read:/interentitydocuments/mynewtab2.php?id=__ID__',
             //	// To remove an existing tab identified by code tabname
             //	'objecttype:-tabname'
         );
@@ -166,16 +166,16 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
         // 'categories_x'		to add a tab in category view
         // (replace 'x' by type of category (0=product, 1=supplier, 2=customer, 3=member)
         // Dictionnaries
-        if (! isset($conf->orderfromsupplierordermulticompany->enabled)) {
-            $conf->orderfromsupplierordermulticompany=new stdClass();
-            $conf->orderfromsupplierordermulticompany->enabled = 0;
+        if (! isset($conf->interentitydocuments->enabled)) {
+            $conf->interentitydocuments=new stdClass();
+            $conf->interentitydocuments->enabled = 0;
         }
         $this->dictionnaries = array();
         /* Example:
           // This is to avoid warnings
-          if (! isset($conf->orderfromsupplierordermulticompany->enabled)) $conf->orderfromsupplierordermulticompany->enabled=0;
+          if (! isset($conf->interentitydocuments->enabled)) $conf->interentitydocuments->enabled=0;
           $this->dictionnaries=array(
-          'langs'=>'orderfromsupplierordermulticompany@orderfromsupplierordermulticompany',
+          'langs'=>'interentitydocuments@interentitydocuments',
           // List of tables we want to see into dictonnary editor
           'tabname'=>array(
           MAIN_DB_PREFIX."table1",
@@ -205,9 +205,9 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
           'tabrowid'=>array("rowid","rowid","rowid"),
           // Condition to show each dictionnary
           'tabcond'=>array(
-          $conf->orderfromsupplierordermulticompany->enabled,
-          $conf->orderfromsupplierordermulticompany->enabled,
-          $conf->orderfromsupplierordermulticompany->enabled
+          $conf->interentitydocuments->enabled,
+          $conf->interentitydocuments->enabled,
+          $conf->interentitydocuments->enabled
           )
           );
          */
@@ -218,7 +218,7 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
         $r = 0;
         // Example:
 
-        $this->boxes[$r][1] = "orderfromsupplierordermulticompany_box@orderfromsupplierordermulticompany";
+        $this->boxes[$r][1] = "interentitydocuments_box@interentitydocuments";
         $r ++;
         /*
           $this->boxes[$r][1] = "myboxb.php";
@@ -257,18 +257,18 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
         //	'fk_menu'=>0,
         //	// This is a Top menu entry
         //	'type'=>'top',
-        //	'titre'=>'orderfromsupplierordermulticompany top menu',
-        //	'mainmenu'=>'orderfromsupplierordermulticompany',
-        //	'leftmenu'=>'orderfromsupplierordermulticompany',
-        //	'url'=>'/orderfromsupplierordermulticompany/pagetop.php',
+        //	'titre'=>'interentitydocuments top menu',
+        //	'mainmenu'=>'interentitydocuments',
+        //	'leftmenu'=>'interentitydocuments',
+        //	'url'=>'/interentitydocuments/pagetop.php',
         //	// Lang file to use (without .lang) by module.
         //	// File must be in langs/code_CODE/ directory.
         //	'langs'=>'mylangfile',
         //	'position'=>100,
         //	// Define condition to show or hide menu entry.
-        //	// Use '$conf->orderfromsupplierordermulticompany->enabled' if entry must be visible if module is enabled.
-        //	'enabled'=>'$conf->orderfromsupplierordermulticompany->enabled',
-        //	// Use 'perms'=>'$user->rights->orderfromsupplierordermulticompany->level1->level2'
+        //	// Use '$conf->interentitydocuments->enabled' if entry must be visible if module is enabled.
+        //	'enabled'=>'$conf->interentitydocuments->enabled',
+        //	// Use 'perms'=>'$user->rights->interentitydocuments->level1->level2'
         //	// if you want your menu with a permission rules
         //	'perms'=>'1',
         //	'target'=>'',
@@ -282,18 +282,18 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
         //	'fk_menu'=>'r=0',
         //	// This is a Left menu entry
         //	'type'=>'left',
-        //	'titre'=>'orderfromsupplierordermulticompany left menu',
-        //	'mainmenu'=>'orderfromsupplierordermulticompany',
-        //	'leftmenu'=>'orderfromsupplierordermulticompany',
-        //	'url'=>'/orderfromsupplierordermulticompany/pagelevel1.php',
+        //	'titre'=>'interentitydocuments left menu',
+        //	'mainmenu'=>'interentitydocuments',
+        //	'leftmenu'=>'interentitydocuments',
+        //	'url'=>'/interentitydocuments/pagelevel1.php',
         //	// Lang file to use (without .lang) by module.
         //	// File must be in langs/code_CODE/ directory.
         //	'langs'=>'mylangfile',
         //	'position'=>100,
         //	// Define condition to show or hide menu entry.
-        //	// Use '$conf->orderfromsupplierordermulticompany->enabled' if entry must be visible if module is enabled.
-        //	'enabled'=>'$conf->orderfromsupplierordermulticompany->enabled',
-        //	// Use 'perms'=>'$user->rights->orderfromsupplierordermulticompany->level1->level2'
+        //	// Use '$conf->interentitydocuments->enabled' if entry must be visible if module is enabled.
+        //	'enabled'=>'$conf->interentitydocuments->enabled',
+        //	// Use 'perms'=>'$user->rights->interentitydocuments->level1->level2'
         //	// if you want your menu with a permission rules
         //	'perms'=>'1',
         //	'target'=>'',
@@ -308,19 +308,19 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
         //	'fk_menu'=>'fk_mainmenu=mainmenucode',
         //	// This is a Left menu entry
         //	'type'=>'left',
-        //	'titre'=>'orderfromsupplierordermulticompany left menu',
+        //	'titre'=>'interentitydocuments left menu',
         //	'mainmenu'=>'mainmenucode',
-        //	'leftmenu'=>'orderfromsupplierordermulticompany',
-        //	'url'=>'/orderfromsupplierordermulticompany/pagelevel2.php',
+        //	'leftmenu'=>'interentitydocuments',
+        //	'url'=>'/interentitydocuments/pagelevel2.php',
         //	// Lang file to use (without .lang) by module.
         //	// File must be in langs/code_CODE/ directory.
         //	'langs'=>'mylangfile',
         //	'position'=>100,
         //	// Define condition to show or hide menu entry.
-        //	// Use '$conf->orderfromsupplierordermulticompany->enabled' if entry must be visible if module is enabled.
+        //	// Use '$conf->interentitydocuments->enabled' if entry must be visible if module is enabled.
         //	// Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-        //	'enabled'=>'$conf->orderfromsupplierordermulticompany->enabled',
-        //	// Use 'perms'=>'$user->rights->orderfromsupplierordermulticompany->level1->level2'
+        //	'enabled'=>'$conf->interentitydocuments->enabled',
+        //	// Use 'perms'=>'$user->rights->interentitydocuments->level1->level2'
         //	// if you want your menu with a permission rules
         //	'perms'=>'1',
         //	'target'=>'',
@@ -449,13 +449,13 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
 		$label = 'AutoReceptionWarehouse';
 		$help  = 'AutoReceptionWarehouseHelp';
 		$key   = 'reception_warehouse';
-		$e->addExtraField($key, $label, 'link', 1, 10, 'commande_fournisseur', 0, 0, '', $param, 0, '', 3, $help, '', 0, 'ofsom@orderfromsupplierordermulticompany', '!empty($conf->global->OFSOM_SET_SUPPLIER_ORDER_RECEIVED_ON_SUPPLIER_SHIPMENT_CLOSED)');
+		$e->addExtraField($key, $label, 'link', 1, 10, 'commande_fournisseur', 0, 0, '', $param, 0, '', 3, $help, '', 0, 'ofsom@interentitydocuments', '!empty($conf->global->OFSOM_SET_SUPPLIER_ORDER_RECEIVED_ON_SUPPLIER_SHIPMENT_CLOSED)');
 
 		// Extrafield de liaison entre la ligne de commande fournisseur et la ligne de commande créée
 		$label = 'supplierOrderDetSource';
 		$help  = 'supplierOrderDetSourceHelp';
 		$key   = 'supplier_order_det_source';
-		$e->addExtraField($key, $label, 'int', 1, 10, 'commandedet', 0, 0, '', '', 0, '', 0, $help, '', 0, 'ofsom@orderfromsupplierordermulticompany');
+		$e->addExtraField($key, $label, 'int', 1, 10, 'commandedet', 0, 0, '', '', 0, '', 0, $help, '', 0, 'ofsom@interentitydocuments');
 
         return $this->_init($sql, $options);
     }
@@ -478,13 +478,13 @@ class modorderfromsupplierordermulticompany extends DolibarrModules
     /**
      * Create tables, keys and data required by module
      * Files llx_table1.sql, llx_table1.key.sql llx_data.sql with create table, create keys
-     * and create data commands must be stored in directory /orderfromsupplierordermulticompany/sql/
+     * and create data commands must be stored in directory /interentitydocuments/sql/
      * This function is called by this->init
      *
      * 	@return		int		<=0 if KO, >0 if OK
      */
     private function loadTables()
     {
-        return $this->_load_tables('/orderfromsupplierordermulticompany/sql/');
+        return $this->_load_tables('/interentitydocuments/sql/');
     }
 }

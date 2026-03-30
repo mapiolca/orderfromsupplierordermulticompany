@@ -27,11 +27,11 @@ require('../config.php');
 
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
-require_once '../lib/orderfromsupplierordermulticompany.lib.php';
+require_once '../lib/interentitydocuments.lib.php';
 
 //require_once "../class/myclass.class.php";
 // Translations
-$langs->load("orderfromsupplierordermulticompany@orderfromsupplierordermulticompany");
+$langs->load("interentitydocuments@interentitydocuments");
 
 // Access control
 if (! $user->admin) {
@@ -75,8 +75,8 @@ $buffer = file_get_contents(dol_buildpath('/mymodule/README.md', 0));
 echo Markdown($buffer);
 
 echo '<br>',
-'<a href="' . dol_buildpath('/orderfromsupplierordermulticompany/COPYING', 1) . '">',
-'<img src="' . dol_buildpath('/orderfromsupplierordermulticompany/img/gplv3.png', 1) . '"/>',
+'<a href="' . dol_buildpath('/interentitydocuments/COPYING', 1) . '">',
+'<img src="' . dol_buildpath('/interentitydocuments/img/gplv3.png', 1) . '"/>',
 '</a>';
 
 llxFooter();

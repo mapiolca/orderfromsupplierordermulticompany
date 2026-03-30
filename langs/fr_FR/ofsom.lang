@@ -1,4 +1,4 @@
-# this file exist for extrafield because the name of langs col in llx_extrafields is limited to 64 char and orderfromsupplierordermulticompany@orderfromsupplierordermulticompany is too long
+# this file exist for extrafield because the name of langs col in llx_extrafields is limited to 64 char and interentitydocuments@interentitydocuments is too long
 
 
 AutoReceptionWarehouse = Entrepôt de reception auto

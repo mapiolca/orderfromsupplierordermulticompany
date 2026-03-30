@@ -1,7 +1,7 @@
 Module104200Name = Commandes depuis les commandes fournisseurs multi-company
 Module104200Desc = Créé des commandes clients depuis les commandes fournisseurs d'autres entités
-orderfromsupplierordermulticompanySetupPage=Ajoutez ici la correspondance entre un tiers et une entité.
-orderfromsupplierordermulticompanySetup=Créé des commandes clients depuis les commandes fournisseurs d'autres entités
+interentitydocumentsSetupPage=Ajoutez ici la correspondance entre un tiers et une entité.
+interentitydocumentsSetup=Créé des commandes clients depuis les commandes fournisseurs d'autres entités
 
 # CONF
 

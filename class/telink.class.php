@@ -20,7 +20,7 @@ class TTELink
 	public $table_element = 'thirdparty_entity';
 
 	/** @var string $picto */
-	public $picto = 'orderfromsupplierordermulticompany@orderfromsupplierordermulticompany';
+	public $picto = 'interentitydocuments@interentitydocuments';
 
 	/** @var string $error Last error message */
 	public $error;
