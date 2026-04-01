@@ -160,6 +160,17 @@ class Interfaceinterentitydocumentstrigger
 			// Création automatique de la facture fournisseur dans l'entité de destination
 			return $this->_cloneInvoice($object);
 		}
+		elseif ($action === 'BILL_BUILDDOC' && !empty($conf->global->OFSOM_AUTO_CREATE_SUPPLIER_INVOICE)) {
+			/** @var Facture $object */
+			dol_include_once('/interentitydocuments/class/telink.class.php');
+
+			$TTELink = new TTELink();
+			$res = $TTELink->copyCustomerInvoicePdfToSupplierInvoice($object);
+			if ($res < 0) {
+				$this->setError($TTELink->error);
+				return -1;
+			}
+		}
 		elseif ($action === 'ORDER_SUPPLIER_RECEIVE') {
 
 			require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
