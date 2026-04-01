@@ -35,8 +35,20 @@
  */
 class Interfaceinterentitydocumentstrigger
 {
-
+	/** @var DoliDB */
 	private $db;
+	/** @var string */
+	public $name;
+	/** @var string */
+	public $family;
+	/** @var string */
+	public $description;
+	/** @var string */
+	public $version;
+	/** @var string */
+	public $picto;
+	/** @var array */
+	public $errors = array();
 
 	/**
 	 * Constructor
