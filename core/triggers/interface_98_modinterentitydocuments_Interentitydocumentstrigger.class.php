@@ -35,8 +35,20 @@
  */
 class Interfaceinterentitydocumentstrigger
 {
-
+	/** @var DoliDB */
 	private $db;
+	/** @var string */
+	public $name;
+	/** @var string */
+	public $family;
+	/** @var string */
+	public $description;
+	/** @var string */
+	public $version;
+	/** @var string */
+	public $picto;
+	/** @var array */
+	public $errors = array();
 
 	/**
 	 * Constructor
@@ -158,7 +170,20 @@ class Interfaceinterentitydocumentstrigger
 		elseif ($action === 'BILL_VALIDATE' && !empty($conf->global->OFSOM_AUTO_CREATE_SUPPLIER_INVOICE)) {
 			/** @var Facture $object */
 			// Création automatique de la facture fournisseur dans l'entité de destination
-			return $this->_cloneInvoice($object);
+			$res = $this->_cloneInvoice($object);
+			if ($res < 0) {
+				return $res;
+			}
+
+			dol_include_once('/interentitydocuments/class/telink.class.php');
+			$TTELink = new TTELink();
+			$resCopy = $TTELink->copyCustomerInvoicePdfToSupplierInvoice($object);
+			if ($resCopy < 0) {
+				$this->setError($TTELink->error);
+				return -1;
+			}
+
+			return $res;
 		}
 		elseif ($action === 'ORDER_SUPPLIER_RECEIVE') {
 

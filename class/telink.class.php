@@ -355,6 +355,84 @@ class TTELink
 	}
 
 	/**
+	 * Copy generated customer invoice PDF into linked supplier invoice directory
+	 *
+	 * @param Facture $invoice Customer invoice object
+	 * @param int $targetEntity Target entity ID (optional)
+	 * @return int <0 if KO, 0 if nothing to do, >0 if OK
+	 */
+	public function copyCustomerInvoicePdfToSupplierInvoice($invoice, $targetEntity = 0)
+	{
+		global $conf, $db, $langs;
+
+		dol_include_once('/fourn/class/fournisseur.facture.class.php');
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+		$langs->load('interentitydocuments@interentitydocuments');
+
+		if (empty($invoice->id) || empty($invoice->ref)) {
+			return 0;
+		}
+
+		if (empty($targetEntity)) {
+			$targetEntity = $this->getSocEntityFromSocId($invoice->socid, $invoice->entity);
+		}
+
+		if ($targetEntity <= 0) {
+			return 0;
+		}
+
+		$sourceEntity = (int) $invoice->entity;
+		$sourceRef = dol_sanitizeFileName($invoice->ref);
+		$sourceDirOutput = (!empty($conf->facture->multidir_output[$sourceEntity])) ? $conf->facture->multidir_output[$sourceEntity] : $conf->facture->dir_output;
+		$sourceFile = $sourceDirOutput . '/' . $sourceRef . '/' . $sourceRef . '.pdf';
+
+		if (!empty($invoice->last_main_doc)) {
+			$sourceFileFromMainDoc = $sourceDirOutput . '/' . $sourceRef . '/' . $invoice->last_main_doc;
+			if (is_readable($sourceFileFromMainDoc)) {
+				$sourceFile = $sourceFileFromMainDoc;
+			}
+		}
+
+		if (!is_readable($sourceFile)) {
+			return 0;
+		}
+
+		$supplierInvoiceId = $this->getSupplierInvoiceIdFromInvoice($invoice, $targetEntity);
+		if ($supplierInvoiceId <= 0) {
+			return 0;
+		}
+
+		$previousEntity = $conf->entity;
+		$conf->entity = $targetEntity;
+
+		$supplierInvoice = new FactureFournisseur($db);
+		$resFetch = $supplierInvoice->fetch($supplierInvoiceId);
+		$conf->entity = $previousEntity;
+
+		if ($resFetch <= 0 || empty($supplierInvoice->ref)) {
+			$this->error = (!empty($supplierInvoice->error)) ? $supplierInvoice->error : $langs->trans('OFSOMInvoicePdfCopyError');
+			return -1;
+		}
+
+		$targetDirOutput = (!empty($conf->fournisseur->facture->multidir_output[$targetEntity])) ? $conf->fournisseur->facture->multidir_output[$targetEntity] : $conf->fournisseur->facture->dir_output;
+		$targetRef = dol_sanitizeFileName($supplierInvoice->ref);
+		$targetDir = $targetDirOutput . '/' . $targetRef;
+		$targetFile = $targetDir . '/' . $targetRef . '.pdf';
+
+		if (dol_mkdir($targetDir) < 0) {
+			$this->error = $langs->trans('OFSOMInvoicePdfCopyError');
+			return -1;
+		}
+
+		if (!dol_copy($sourceFile, $targetFile, 0, 1)) {
+			$this->error = $langs->trans('OFSOMInvoicePdfCopyError');
+			return -1;
+		}
+
+		return 1;
+	}
+
+	/**
 	 * Permet de récupérer l'ID de la facture fournisseur côté entité cible à partir de la facture client
 	 * @param Facture $invoice facture client source
 	 * @param int $targetEntity entité cible
